@@ -467,8 +467,7 @@ class _ConcoursProfessionnelsPageState
                     context,
                     MaterialPageRoute(
                       builder: (context) => PayementScreen(
-                        sujet: selectedSubject
-                            .toString(), // Concaténer les matières sélectionnées en une seule chaîne
+                        sujet: selectedSubject.toString(), // Concaténer les matières sélectionnées en une seule chaîne
                         price: totalPrice, // Passer le prix total ici
                         userphone: "",
                         callback: () async {},
