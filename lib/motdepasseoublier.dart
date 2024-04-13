@@ -24,11 +24,11 @@ class _ReinitialiseState extends State<Reinitialise> {
               child: Column(
                 children: [
                   Spacer(),
-                  Image.asset(
+                /*   Image.asset(
                     "lib/images/logo.png",
                     width: 50,
                     height: 50,
-                  ),
+                  ), */
                   Row(children: [
                     IconButton(
                         onPressed: () {
@@ -42,7 +42,7 @@ class _ReinitialiseState extends State<Reinitialise> {
                       margin: EdgeInsets.symmetric(horizontal: 60),
                       child: Text(
                         "Mot de passe oublié",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(color: Colors.white, fontSize: 15),
                         textAlign: TextAlign.center,
                       ),
                     ),

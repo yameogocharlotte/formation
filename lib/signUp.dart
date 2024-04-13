@@ -73,28 +73,49 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          // Ajoutez cet IconButton pour l'icône de retour
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        title: Center(
-          child: Text(
-            'Créer votre compte gratuitement',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-            textAlign: TextAlign.center,
+        leading:
+            Container(), // To remove the space reserved for the previous icon
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50),
+          child: Container(
+           
+            decoration: BoxDecoration(
+              color: Colors.green, // Change the color to match your design
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  // Add this IconButton for the back icon
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                const Text(
+                  '  Créer votre compte',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
         backgroundColor: Colors.green,
       ),
-      body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+
+      /* Container(
+      /*  height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width, */
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -103,11 +124,11 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+           
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 300,
+              
                 child: TextField(
                   controller: _whatsappController,
                   keyboardType: TextInputType.phone,
@@ -183,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(
-                width: 300,
+               
                 child: TextField(
                   controller: _confirmPasswordController,
                   obscureText: _isObscured,
@@ -193,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                     fillColor: Colors.white,
                     prefixIcon: Icon(Icons.lock),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(15.0),
                     ),
                     suffixIcon: IconButton(
                       onPressed: () {
@@ -240,7 +261,199 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ],
-          )),
+          )), */
+
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.yellow, Colors.orange],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 50),
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.12,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  child: TextField(
+                    controller: _whatsappController,
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(8),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: 'Numéro WhatsApp',
+                      filled: true,
+                      fillColor:  Color.fromARGB(255, 238, 238, 238),
+                      prefixIcon: Icon(Icons.phone),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.12,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  child: TextField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Nom',
+                      filled: true,
+                      fillColor:  Color.fromARGB(255, 238, 238, 238),
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.12,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  child: TextField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Prénom',
+                      filled: true,
+                      fillColor:  Color.fromARGB(255, 238, 238, 238),
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.12,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  child: TextField(
+                    controller: _passwordController,
+                    obscureText: _isObscured,
+                    decoration: InputDecoration(
+                      labelText: 'Mot de passe',
+                      filled: true,
+                      fillColor:   Color.fromARGB(255, 238, 238, 238),
+                      prefixIcon: Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _isObscured = !_isObscured;
+                          });
+                        },
+                        icon: Icon(_isObscured
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.12,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  child: TextField(
+                    controller: _confirmPasswordController,
+                    obscureText: _isObscured,
+                    decoration: InputDecoration(
+                      labelText: 'Confirmer le mot de passe',
+                      filled: true,
+                      fillColor:  Color.fromARGB(255, 238, 238, 238),
+                      prefixIcon: Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _isObscured = !_isObscured;
+                          });
+                        },
+                        icon: Icon(_isObscured
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              if (_errorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    _errorMessage,
+                    style: TextStyle(color: Colors.red, fontSize: 14,fontWeight:FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.12,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.1,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: _createAccount,
+                    child: Text(
+                      'Créer votre compte',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 5, 7, 35),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        Color.fromARGB(255, 225, 255, 2),
+                      ),
+                      minimumSize: MaterialStateProperty.all(Size(50, 50)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.green,
         child: Row(

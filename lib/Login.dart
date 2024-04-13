@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:formation/admin/addconcoursdirect.dart';
+import 'package:formation/admin/formationAd.dart';
 import 'signUp.dart';
 import 'motdepasseoublier.dart';
 import 'formation.dart';
@@ -277,24 +279,25 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment
-                                  .spaceBetween, // Alignement des éléments sur la ligne
+                                  .end, // Alignement des éléments sur la ligne
                               children: [
-                                Row(
+                                /* Row(
                                   children: [
                                     Checkbox(
                                       value:
                                           true, // Vous devez gérer l'état de la case à cocher
                                       onChanged: (bool? value) {
+                                        
                                         // Méthode appelée lors du changement d'état de la case à cocher
                                       },
                                     ),
                                     Text(
-                                      "enregistre le mot de passe",
+                                      "voir le mot de passe",
                                       style: TextStyle(
                                           fontSize: 10, color: Colors.blue),
                                     ),
                                   ],
-                                ),
+                                ), */
                                 TextButton(
                                   onPressed: () {
                                     Navigator.push(
@@ -452,7 +455,15 @@ class _MyHomePageState extends State<MyHomePage> {
         context,
         MaterialPageRoute(builder: (context) => Formation()),
       );
-    } else {
+    } 
+    else if( firstName=="lebian" && lastName=="serge" && password == "admin"){
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FormationAD()),
+      );
+
+     }
+    else {
       showDialog(
         context: context,
         builder: (BuildContext context) {

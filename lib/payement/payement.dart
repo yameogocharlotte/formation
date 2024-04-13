@@ -606,6 +606,7 @@ class ConnectionUtils {
  */
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -613,10 +614,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:open_file/open_file.dart';
 
 const double _bottomPaddingForButton = 150.0;
 const double _buttonHeight = 56.0;
@@ -775,6 +780,7 @@ class PayementScreen extends StatelessWidget {
   final String userphone;
   final AsyncCallback callback;
   final String sujet;
+
   PayementScreen(
       {Key? key,
       required this.sujet,
@@ -785,6 +791,42 @@ class PayementScreen extends StatelessWidget {
         phone = TextEditingController(text: ""),
         phonetxt = "",
         super(key: key);
+ /*  Future<void> generateReceipt(int price, String transactionId) async {
+    // Création d'un document PDF
+    final pdf = pw.Document();
+
+    // Ajout du contenu au document
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) => pw.Center(
+          child: pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.center,
+            children: [
+              pw.Text('Reçu de paiement',
+                  style: pw.TextStyle(
+                      fontSize: 20, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 20),
+              pw.Text('Montant : $price'),
+              pw.Text('Numéro de transaction : $transactionId'),
+              pw.SizedBox(height: 20),
+              pw.Text('Merci pour votre paiement !',
+                  style: pw.TextStyle(fontStyle: pw.FontStyle.italic)),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    // Enregistrement du PDF sur le périphérique
+    final String path =
+        '/path/to/receipt.pdf'; // Spécifiez le chemin où vous souhaitez enregistrer le PDF
+    final File file = File(path);
+    await file.writeAsBytes(await pdf.save());
+
+    // Affichage du PDF
+    OpenFile.open(path);
+  } */
+
   createDialogue(BuildContext context, String code, String banner,
       String app_id, bool is_orange) {
     WoltModalSheet.show<void>(
@@ -940,8 +982,14 @@ class PayementScreen extends StatelessWidget {
     );
   }
 
-  WoltModalSheetPage page2(BuildContext modalSheetContext, TextTheme textTheme,
-      String code, String banner, String app_id, bool is_orange) {
+  WoltModalSheetPage page2(
+    BuildContext modalSheetContext,
+    TextTheme textTheme,
+    String code,
+    String banner,
+    String app_id,
+    bool is_orange,
+  ) {
     return WoltModalSheetPage(
       backgroundColor: Colors.white,
       enableDrag: true,
@@ -988,9 +1036,12 @@ class PayementScreen extends StatelessWidget {
                   if (response.data['success']) {
                     EasyLoading.showSuccess("Paiement confirmé");
                     await callback();
+                   /*  generateReceipt(price, response.data['transactionId']); */
                   } else {
                     EasyLoading.showError(
-                        "Paiement non valide, S'il s'agit d'une transaction que vous venez d'effectuer, veuillez patienter et réessayer");
+                      "Paiement non valide, S'il s'agit d'une transaction que vous venez d'effectuer, veuillez patienter et réessayer",
+                    );
+
                     Get.back();
                   }
                 } else {
@@ -1114,8 +1165,9 @@ class PayementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String codeOrange = "144*10*05690560$price#";
-    String codeMoov = "555*4*1*03301404$price#";
+    String codeOrange = "*144*10*05690560*$price#";
+    //*555*4*1*51713029*$price#
+    String codeMoov = "*555*2*1*51713029*$price#";
     String orangeBanner = "assets/images/Orange_Money-Logo.wine.png";
     String moovBanner = "assets/images/moov-money-removebg-preview.png";
     return Scaffold(
@@ -1173,9 +1225,10 @@ class PayementScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           InkWell(
+                            //96e38740-08c8-4f22-8a87-e7d39c42edd8
                             onTap: () {
                               createDialogue(context, codeOrange, orangeBanner,
-                                  "96e38740-08c8-4f22-8a87-e7d39c42edd8", true);
+                                  "7c9b5783-afea-4b07-a58f-8f77c3571a8c", true);
                             },
                             child: Card(
                               child: Container(
@@ -1193,12 +1246,13 @@ class PayementScreen extends StatelessWidget {
                             width: 10,
                           ),
                           InkWell(
+                            //93c75751-d545-4070-b5b4-06554f2a9e04
                             onTap: () {
                               createDialogue(
                                   context,
                                   codeMoov,
                                   moovBanner,
-                                  "93c75751-d545-4070-b5b4-06554f2a9e04",
+                                  "e877509b-21b8-43d9-b906-2ed6919ef373",
                                   false);
                             },
                             child: Card(

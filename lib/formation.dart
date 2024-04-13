@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:formation/payement/payement.dart';
@@ -34,14 +35,16 @@ class _FormationState extends State<Formation> {
           ),
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 30),
+              
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    width: 300,
+                  
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -52,7 +55,7 @@ class _FormationState extends State<Formation> {
                         );
                       },
                       child: Text(
-                        'Concours directs',
+                        '      Concours directs      ',
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -62,7 +65,7 @@ class _FormationState extends State<Formation> {
                     ),
                   ),
                   Container(
-                    width: 300,
+                    
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -83,7 +86,7 @@ class _FormationState extends State<Formation> {
                     ),
                   ),
                   Container(
-                    width: 300,
+                    
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -157,41 +160,82 @@ class _FormationState extends State<Formation> {
   }
 }
 
+class Subject {
+  final String name;
+  final double price;
+  bool isSelected;
+
+  Subject({required this.name, required this.price, this.isSelected = false});
+
+  factory Subject.fromMap(Map<String, dynamic> map) {
+    return Subject(
+      name: map['name'],
+      price: map['price'],
+      isSelected: map['isSelected'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'price': price,
+      'isSelected': isSelected,
+    };
+  }
+}
+
+class FirestoreService {
+  final CollectionReference _subjectsCollection =
+      FirebaseFirestore.instance.collection('subjects3');
+
+  Future<List<Subject>> getSubjects() async {
+    QuerySnapshot querySnapshot = await _subjectsCollection.get();
+    return querySnapshot.docs.map((doc) {
+      return Subject(
+        name: doc['name'] as String,
+        price: (doc['price'] ?? 0).toDouble(),
+      );
+    }).toList();
+  }
+}
+
 class ConcoursDirectsPage extends StatefulWidget {
   @override
   _ConcoursDirectsPageState createState() => _ConcoursDirectsPageState();
 }
 
 class _ConcoursDirectsPageState extends State<ConcoursDirectsPage> {
-  Map<String, bool> selectedSubjects = {
-    'Assistant des eaux et forets': false,
-    'Assistant de douanes': false,
-    'ENAREF cycle c': false,
-    'Agents techniques de l environnement': false,
-    'Agents techniques en agriculture': false,
-    'ENAREF cycle b': false,
-    'Adjoint de secretariat': false,
-  };
+  late List<Subject> subjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSubjects();
+  }
+
+  void _loadSubjects() async {
+    subjects = await FirestoreService().getSubjects();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          // Ajoutez cet IconButton pour l'icône de retour
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text('Concours Directs',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 25,
-                fontWeight: FontWeight.bold)),
+        title: Text(
+          'Concours Directs',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Color.fromARGB(255, 76, 175, 80),
       ),
       body: Container(
@@ -206,104 +250,78 @@ class _ConcoursDirectsPageState extends State<ConcoursDirectsPage> {
           children: [
             SizedBox(height: 20),
             Expanded(
-              child: ListView(
-                children: selectedSubjects.keys.map((String subject) {
+              child: ListView.builder(
+                itemCount: subjects.length,
+                itemBuilder: (context, index) {
+                  final subject = subjects[index];
                   return Card(
-                      elevation: 5, // Élévation pour donner un effet d'ombre
-                      margin: EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16), // Marge autour du Card
-                      child: CheckboxListTile(
-                        title: Text(subject),
-                        subtitle: Text(
-                          'Prix: ${getPrice(subject).toString()}F',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        value: selectedSubjects[subject] ?? false,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            selectedSubjects[subject] = value!;
-                          });
-                        },
-                      ));
-                }).toList(),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                List<String> selected = [];
-                selectedSubjects.forEach((key, value) {
-                  if (value) {
-                    selected.add(key);
-                  }
-                });
-                int totalPrice = 0;
-
-                for (String subject in selected) {
-                  // Logique pour calculer le prix de chaque matière et l'ajouter au prix total
-                  if (subject == 'Assistant des eaux et forets') {
-                    totalPrice += 1000;
-                  } else if (subject == 'Assistant de douanes') {
-                    totalPrice += 1200;
-                  } else if (subject == 'ENAREF cycle c') {
-                    totalPrice += 150;
-                  } else if (subject ==
-                      'Agents techniques de l environnement') {
-                    totalPrice += 2000;
-                  } else if (subject == 'Agents techniques en agriculture') {
-                    totalPrice += 300;
-                  } else if (subject == 'ENAREF cycle b') {
-                    totalPrice += 1500;
-                  } else if (subject == 'Adjoint de secretariat') {
-                    totalPrice += 5000;
-                  }
-                }
-                if (totalPrice > 0) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PayementScreen(
-                        sujet: selected.join(
-                            ', '), // Concaténer les matières sélectionnées en une seule chaîne
-                        price: totalPrice, // Passer le prix total ici
-                        userphone: "",
-                        callback: () async {},
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: CheckboxListTile(
+                      title: Text(subject.name),
+                      subtitle: Text(
+                        'Prix: ${subject.price.toString()}F',
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
+                      value: subject.isSelected ,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          subject.isSelected = value ?? false;
+                        });
+                      },
                     ),
                   );
-                }
-                else {
-                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Veuillez sélectionner une matière.'),
-                    ),
-                  );
-                  }
-              },
-              child: Text(
-                'Payer',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(Color.fromARGB(255, 76, 175, 80)),
-                minimumSize: MaterialStateProperty.all(Size(230, 40)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        15), // Ajoutez votre rayon de bordure ici
-                  ),
-                ),
+                },
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
+           ElevatedButton(
+  onPressed: () {
+    List<Subject> selectedSubjects = subjects.where((subject) => subject.isSelected).toList();
+    if (selectedSubjects.isNotEmpty) {
+      double totalPrice = selectedSubjects.map((subject) => subject.price).reduce((a, b) => a + b);
+      int roundedPrice = totalPrice.round();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PayementScreen(
+            sujet: selectedSubjects.map((subject) => subject.name).join(', '), 
+            price: roundedPrice,
+            userphone: "",
+            callback: () async {},
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Veuillez sélectionner au moins un sujet.'),
+        ),
+      );
+    }
+  },
+  child: Text(
+    'Payer',
+    style: TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  style: ButtonStyle(
+    backgroundColor: MaterialStateProperty.all(
+      Color.fromARGB(255, 76, 175, 80),
+    ),
+    minimumSize: MaterialStateProperty.all(Size(230, 40)),
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+    ),
+  ),
+),
+
+            SizedBox(height: 10),
           ],
         ),
       ),
@@ -352,29 +370,8 @@ class _ConcoursDirectsPageState extends State<ConcoursDirectsPage> {
       ),
     );
   }
-
-  int getPrice(String subject) {
-    // Fonction pour obtenir le prix en fonction du sujet
-    switch (subject) {
-      case 'Assistant des eaux et forets':
-        return 1000;
-      case 'Assistant de douanes':
-        return 1200;
-      case 'ENAREF cycle c':
-        return 150;
-      case 'Agents techniques de l environnement':
-        return 2000;
-      case 'Agents techniques en agriculture':
-        return 300;
-      case 'ENAREF cycle b':
-        return 1500;
-      case 'Adjoint de secretariat':
-        return 5000;
-      default:
-        return 0;
-    }
-  }
 }
+
 
 class ConcoursProfessionnelsPage extends StatefulWidget {
   @override
@@ -384,17 +381,21 @@ class ConcoursProfessionnelsPage extends StatefulWidget {
 
 class _ConcoursProfessionnelsPageState
     extends State<ConcoursProfessionnelsPage> {
-  Map<String, int> subjectPrices = {
-    'Medecins Specialiste': 10000,
-    'Pharmaciens Specialistes': 10000,
-    'Chirurgiens dentistes specialistes': 10000,
-    'ingenieur en agricultures': 10000,
-    'Conseille en agricultures': 10000,
-    'biologistes medicaux': 10000,
-    'ingenieur du genie sanitaire': 10000,
-    'Ingenieurs en genie biomedical': 10000,
-    'Inspecteur du travail': 10000,
-  };
+  List<Map<String, dynamic>> subjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSubjects();
+  }
+
+  void _loadSubjects() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance.collection('subjects').get();
+    setState(() {
+      subjects = querySnapshot.docs.map((doc) => doc.data()).toList();
+    });
+  }
 
   String? selectedSubject;
 
@@ -403,7 +404,6 @@ class _ConcoursProfessionnelsPageState
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          // Ajoutez cet IconButton pour l'icône de retour
           icon: Icon(
             Icons.arrow_back,
             color: Colors.white,
@@ -434,26 +434,28 @@ class _ConcoursProfessionnelsPageState
           children: [
             SizedBox(height: 20),
             Expanded(
-              child: ListView(
-                children: subjectPrices.keys.map((String subject) {
+              child: ListView.builder(
+                itemCount: subjects.length,
+                itemBuilder: (context, index) {
+                  final subject = subjects[index];
                   return Card(
                     elevation: 5,
                     margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     child: ListTile(
                       title: Text(
-                        '$subject \n (Prix: ${subjectPrices[subject]}F)',
+                        '${subject['name']} \n (Prix: ${subject['price']}F)',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onTap: () {
                         setState(() {
-                          selectedSubject = subject;
+                          selectedSubject = subject['name'];
                         });
                       },
-                      selected: selectedSubject == subject,
+                      selected: selectedSubject == subject['name'],
                       selectedTileColor: Colors.green,
                     ),
                   );
-                }).toList(),
+                },
               ),
             ),
             SizedBox(
@@ -462,13 +464,18 @@ class _ConcoursProfessionnelsPageState
             ElevatedButton(
               onPressed: () {
                 if (selectedSubject != null) {
-                  int totalPrice = subjectPrices[selectedSubject]!;
+                  final selectedSubjectData = subjects.firstWhere(
+                      (subject) => subject['name'] == selectedSubject);
+                  double totalPrice = selectedSubjectData['price'];
+                  int roundedPrice = totalPrice
+                      .round(); // Arrondir le prix à l'entier le plus proche
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => PayementScreen(
-                        sujet: selectedSubject.toString(), // Concaténer les matières sélectionnées en une seule chaîne
-                        price: totalPrice, // Passer le prix total ici
+                        sujet: selectedSubject
+                            .toString(), // Concaténer les matières sélectionnées en une seule chaîne
+                        price: roundedPrice, // Passer le prix total arrondi ici
                         userphone: "",
                         callback: () async {},
                       ),
@@ -565,31 +572,6 @@ class _ConcoursProfessionnelsPageState
         });
       },
     );
-  }
-
-  int getPrice(String subject) {
-    switch (subject) {
-      case 'Medecins Specialiste':
-        return 10000;
-      case 'Pharmaciens Specialistes':
-        return 10000;
-      case 'Chirurgiens dentistes specialistes':
-        return 10000;
-      case 'ingenieur en agricultures':
-        return 10000;
-      case 'Conseille en agricultures':
-        return 10000;
-      case 'biologistes medicaux':
-        return 10000;
-      case 'ingenieur du genie sanitaire':
-        return 10000;
-      case 'Ingenieurs en genie biomedical':
-        return 10000;
-      case 'Inspecteur du travail':
-        return 10000;
-      default:
-        return 0;
-    }
   }
 }
 
@@ -600,17 +582,21 @@ class ExamenProfessionnelPage extends StatefulWidget {
 }
 
 class _ExamenProfessionnelPageState extends State<ExamenProfessionnelPage> {
-  Map<String, int> subjectPrices = {
-    'Administrateur': 5000,
-    'Attache principal': 5000,
-    'Redacteur principales de 1 ere classe': 5000,
-    'Redacteur principales de 2 eme classe': 5000,
-    'Animateur principale de 1 ere classe': 5000,
-    'Animateur principale de 2 ere classe': 5000,
-    'bibliothecaire principal': 5000,
-    'Techniciens principale de 1 ere classe': 5000,
-    'Techniciens principale de 2 ere classe': 5000,
-  };
+   List<Map<String, dynamic>> subjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSubjects();
+  }
+
+  void _loadSubjects() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance.collection('subjects2').get();
+    setState(() {
+      subjects = querySnapshot.docs.map((doc) => doc.data()).toList();
+    });
+  }
 
   String? selectedSubject;
 
@@ -619,7 +605,6 @@ class _ExamenProfessionnelPageState extends State<ExamenProfessionnelPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          // Ajoutez cet IconButton pour l'icône de retour
           icon: Icon(
             Icons.arrow_back,
             color: Colors.white,
@@ -650,39 +635,46 @@ class _ExamenProfessionnelPageState extends State<ExamenProfessionnelPage> {
           children: [
             SizedBox(height: 20),
             Expanded(
-              child: ListView(
-                children: subjectPrices.keys.map((String subject) {
+              child: ListView.builder(
+                itemCount: subjects.length,
+                itemBuilder: (context, index) {
+                  final subject = subjects[index];
                   return Card(
                     elevation: 5,
                     margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     child: ListTile(
                       title: Text(
-                        '$subject \n (Prix: ${subjectPrices[subject]}F)',
+                        '${subject['name']} \n (Prix: ${subject['price']}F)',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onTap: () {
                         setState(() {
-                          selectedSubject = subject;
+                          selectedSubject = subject['name'];
                         });
                       },
-                      selected: selectedSubject == subject,
+                      selected: selectedSubject == subject['name'],
                       selectedTileColor: Colors.green,
                     ),
                   );
-                }).toList(),
+                },
               ),
+            ),
+            SizedBox(
+              height: 10,
             ),
             ElevatedButton(
               onPressed: () {
                 if (selectedSubject != null) {
-                  int totalPrice = subjectPrices[selectedSubject]!;
+                  final selectedSubjectData = subjects.firstWhere(
+                      (subject) => subject['name'] == selectedSubject);
+                  double totalPrice = selectedSubjectData['price'];
+                  int roundedPrice = totalPrice.round();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => PayementScreen(
-                        sujet: selectedSubject
-                            .toString(), // Concaténer les matières sélectionnées en une seule chaîne
-                        price: totalPrice, // Passer le prix total ici
+                        sujet: selectedSubject.toString(),
+                        price: roundedPrice,
                         userphone: "",
                         callback: () async {},
                       ),
@@ -718,7 +710,7 @@ class _ExamenProfessionnelPageState extends State<ExamenProfessionnelPage> {
             ),
             SizedBox(
               height: 10,
-            )
+            ),
           ],
         ),
       ),
@@ -779,30 +771,5 @@ class _ExamenProfessionnelPageState extends State<ExamenProfessionnelPage> {
         });
       },
     );
-  }
-
-  int getPrice(String subject) {
-    switch (subject) {
-      case 'Administrateur':
-        return 5000;
-      case 'Attache principal':
-        return 5000;
-      case 'Redacteur principales de 1 ere classe':
-        return 5000;
-      case 'Redacteur principales de 2 eme classe':
-        return 5000;
-      case 'Animateur principale de 1 ere classe':
-        return 5000;
-      case 'Animateur principale de 2 ere classe':
-        return 5000;
-      case 'bibliothecaire principal':
-        return 5000;
-      case 'Techniciens principale de 1 ere classe':
-        return 5000;
-      case 'Techniciens principale de 2 ere classe':
-        return 5000;
-      default:
-        return 0;
-    }
   }
 }
