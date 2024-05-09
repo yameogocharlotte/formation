@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:formation/Login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -53,7 +54,12 @@ class _LoginPageState extends State<LoginPage> {
       'password': _passwordController.text,
       'confirmPassword': _confirmPasswordController.text,
       // Ajoutez d'autres champs ici si nécessaire
-    }).then((value) {
+    }).then((value) async {
+
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('Id', value.id);
+
       print('Compte créé avec succès');
       Navigator.push(
         context,
@@ -78,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(50),
           child: Container(
-           
+
             decoration: BoxDecoration(
               color: Colors.green, // Change the color to match your design
               borderRadius: BorderRadius.only(
@@ -113,155 +119,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.green,
       ),
 
-      /* Container(
-      /*  height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width, */
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.yellow, Colors.orange],
-            ),
-          ),
-          child: Column(
-           
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-              
-                child: TextField(
-                  controller: _whatsappController,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(8), // Limite à 8 chiffres
-                  ],
-                  decoration: InputDecoration(
-                    labelText: 'Numéro WhatsApp',
-                    filled: true,
-                    fillColor: Colors.white,
-                    prefixIcon: Icon(Icons.phone),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: _firstNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nom',
-                    filled: true,
-                    fillColor: Colors.white,
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: _lastNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Prénom',
-                    filled: true,
-                    fillColor: Colors.white,
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: _passwordController,
-                  obscureText: _isObscured,
-                  decoration: InputDecoration(
-                    labelText: 'Mot de passe',
-                    filled: true,
-                    fillColor: Colors.white,
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isObscured = !_isObscured;
-                        });
-                      },
-                      icon: Icon(_isObscured
-                          ? Icons.visibility_off
-                          : Icons.visibility),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-               
-                child: TextField(
-                  controller: _confirmPasswordController,
-                  obscureText: _isObscured,
-                  decoration: InputDecoration(
-                    labelText: 'Confirmer le mot de passe',
-                    filled: true,
-                    fillColor: Colors.white,
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isObscured = !_isObscured;
-                        });
-                      },
-                      icon: Icon(_isObscured
-                          ? Icons.visibility_off
-                          : Icons.visibility),
-                    ),
-                  ),
-                ),
-              ),
-              if (_errorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    _errorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 14),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ElevatedButton(
-                onPressed: _createAccount,
-                child: Text(
-                  'Créer votre compte',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 5, 7, 35),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Color.fromARGB(255, 225, 255, 2),
-                  ),
-                  minimumSize: MaterialStateProperty.all(Size(300, 50)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )), */
+
 
       body: Container(
         height: MediaQuery.of(context).size.height,

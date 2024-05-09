@@ -16,6 +16,13 @@ Future<void> main() async {
       projectId: "formation-b730e",
     ),
   );
+   WidgetsFlutterBinding.ensureInitialized();
+
+
+ /* await FlutterDownloader.initialize(
+    debug: true,
+    ignoreSsl: true
+  );*/
   EasyLoading.init();
   runApp(const MyApp());
 }
